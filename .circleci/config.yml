@@ -11,7 +11,7 @@ version: 2
 jobs:
   build-1.15:
     docker:
-      - image: circleci/python:3.7.2-stretch
+      - image: circleci/debian:stretch
     environment:
       VERSION: "1.15"
       SRC_VERSION_TAG: "1.15.9-alpine"
