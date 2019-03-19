@@ -11,7 +11,7 @@ COPY fs/ /
 ENV FCGI_HOST="127.0.0.1" \
     FCGI_PORT=9000 \
     MAX_REQUEST_SIZE="8M" \
-    WEBROOT="/app" \
+    WEBROOT="/app/public" \
     TIMEOUT=60
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
