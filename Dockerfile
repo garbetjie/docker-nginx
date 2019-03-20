@@ -2,8 +2,8 @@ ARG SRC_VERSION_TAG="1.15.9-alpine"
 FROM nginx:${SRC_VERSION_TAG}
 
 RUN set -e; \
-    cd /etc/nginx; \
-    rm -rf conf.d fastcgi* *.default *_params; \
+    rm -rf /etc/nginx; \
+    mkdir /etc/nginx; \
     apk add --no-cache gettext
 
 COPY fs/ /
@@ -13,5 +13,7 @@ ENV FCGI_HOST="127.0.0.1" \
     MAX_REQUEST_SIZE="8M" \
     WEBROOT="/app/public" \
     TIMEOUT=60
+
+WORKDIR "/app"
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
