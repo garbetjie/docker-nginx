@@ -2,8 +2,8 @@ ARG SRC_VERSION_TAG="1.15.9-alpine"
 FROM nginx:${SRC_VERSION_TAG}
 
 RUN set -e; \
-    rm -rf /etc/nginx; \
-    mkdir /etc/nginx; \
+    cd /etc/nginx; \
+    rm -rf conf.d fastcgi* *.default *_params; \
     apk add --no-cache gettext
 
 COPY fs/ /
