@@ -1,11 +1,11 @@
 aliases:
-  stepsFcgi: &stepsFcgi
+  steps: &steps
     - checkout
     - setup_remote_docker
-    - run: docker pull "${DOCKER_HUB_REPO}/nginx:${VERSION}-fcgi" || true
-    - run: docker build -t "${DOCKER_HUB_REPO}/nginx:${VERSION}-fcgi" --cache-from="${DOCKER_HUB_REPO}/nginx:${VERSION}-fcgi" --build-arg SRC_VERSION_TAG=${SRC_VERSION_TAG} .
+    - run: docker pull "${DOCKER_HUB_REPO}/nginx:${VERSION}" || true
+    - run: docker build -t "${DOCKER_HUB_REPO}/nginx:${VERSION}" --cache-from="${DOCKER_HUB_REPO}/nginx:${VERSION}" --build-arg SRC_VERSION_TAG=${SRC_VERSION_TAG} ${DIRNAME}
     - run: echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
-    - run: docker push "${DOCKER_HUB_REPO}/nginx:${VERSION}-fcgi"
+    - run: docker push "${DOCKER_HUB_REPO}/nginx:${VERSION}"
 
 version: 2
 jobs:
@@ -13,13 +13,23 @@ jobs:
     docker:
       - image: circleci/python:3.7.2-stretch
     environment:
-      VERSION: "1.15"
+      VERSION: "1.15-fcgi"
       SRC_VERSION_TAG: "1.15.9-alpine"
-    steps: *stepsFcgi
+      DIRNAME: "fcgi"
+    steps: *steps
+  build-echo:
+    docker:
+      - image: circleci/python:3.7.2-stretch
+    environment:
+      VERSION: "echo"
+      DIRNAME: "echo"
+    steps: *steps
 
 workflows:
   version: 2
   build:
     jobs:
       - build-1.15-fcgi:
+          context: docker-hub
+      - build-echo:
           context: docker-hub
