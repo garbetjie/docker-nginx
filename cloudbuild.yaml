@@ -24,6 +24,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     id: fpm-pull
     waitFor: ['-']
+    args: ['-c', 'docker pull gcr.io/$PROJECT_ID/shared/nginx:fpm || exit 0']
 
   - name: 'gcr.io/cloud-builders/docker'
     waitFor: [fpm-pull]
