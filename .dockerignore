@@ -1,1 +1,7 @@
 Dockerfile
+.circleci/
+.idea/
+.git/
+cloudbuild.yaml
+README.md
+push.sh
