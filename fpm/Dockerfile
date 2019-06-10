@@ -15,6 +15,5 @@ ENV FCGI_HOST="fpm" \
 COPY fs/ /
 
 WORKDIR "/app"
-VOLUME ["/app"]
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
