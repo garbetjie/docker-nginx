@@ -7,17 +7,12 @@ steps:
     entrypoint: 'bash'
     id: echo-pull
     waitFor: ['-']
-    args: ['-c', 'docker pull gcr.io/$PROJECT_ID/shared/nginx:echo || exit 0']
+    args: ['-c', 'docker pull $_DOCKER_HUB_REPO/nginx:echo || exit 0']
 
   - name: 'gcr.io/cloud-builders/docker'
     waitFor: [echo-pull]
     id: echo-build
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/shared/nginx:echo', '--cache-from', 'gcr.io/$PROJECT_ID/shared/nginx:echo', '-f', 'echo/Dockerfile', 'echo']
-
-  - name: 'gcr.io/cloud-builders/docker'
-    waitFor: [echo-build]
-    entrypoint: 'bash'
-    args: ['-c', 'docker tag gcr.io/$PROJECT_ID/shared/nginx:echo "gcr.io/$PROJECT_ID/shared/nginx:echo-$(date +%Y%m%d)"']
+    args: ['build', '-t', '$_DOCKER_HUB_REPO/nginx:echo', '--cache-from', '$_DOCKER_HUB_REPO/nginx:echo', '-f', 'echo/Dockerfile', 'echo']
 
 # Build FPM images.
 
@@ -25,17 +20,43 @@ steps:
     id: fpm-pull
     waitFor: ['-']
     entrypoint: 'bash'
-    args: ['-c', 'docker pull gcr.io/$PROJECT_ID/shared/nginx:fpm || exit 0']
+    args: ['-c', 'docker pull $_DOCKER_HUB_REPO/nginx:fpm || exit 0']
 
   - name: 'gcr.io/cloud-builders/docker'
     waitFor: [fpm-pull]
     id: fpm-build
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/shared/nginx:fpm', '--cache-from', 'gcr.io/$PROJECT_ID/shared/nginx:fpm', '-f', 'fpm/Dockerfile', 'fpm']
+    args: ['build', '-t', '$_DOCKER_HUB_REPO/nginx:fpm', '--cache-from', '$_DOCKER_HUB_REPO/nginx:fpm', '-f', 'fpm/Dockerfile', 'fpm']
+
+# Log in to Docker Hub.
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: decrypt-hub-username
+    waitFor: ['-']
+    args:
+      - 'kms'
+      - 'decrypt'
+      - '--location=global'
+      - '--keyring=docker'
+      - '--key=hub'
+      - '--ciphertext-file=.cloudbuild/docker-hub-username.enc'
+      - '--plaintext-file=docker-hub-username.txt'
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: decrypt-hub-password
+    waitFor: ['-']
+    args:
+      - 'kms'
+      - 'decrypt'
+      - '--location=global'
+      - '--keyring=docker'
+      - '--key=hub'
+      - '--ciphertext-file=.cloudbuild/docker-hub-password.enc'
+      - '--plaintext-file=docker-hub-password.txt'
 
   - name: 'gcr.io/cloud-builders/docker'
-    waitFor: [fpm-build]
+    waitFor: [decrypt-hub-username, decrypt-hub-password]
     entrypoint: 'bash'
-    args: ['-c', 'docker tag gcr.io/$PROJECT_ID/shared/nginx:fpm "gcr.io/$PROJECT_ID/shared/nginx:fpm-$(date +%Y%m%d)"']
+    args: ['-c', 'cat docker-hub-password.txt | docker login --username=$$(cat docker-hub-username.txt) --password-stdin']
 
 images:
   - 'gcr.io/$PROJECT_ID/shared/nginx'
