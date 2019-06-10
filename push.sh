@@ -1,30 +1,19 @@
 #!/usr/bin/env bash
 
-if [[ $# -lt 1 ]]; then
-    printf "Usage: $0 \e[4mGCP_PROJECT\e[0m [\e[4mGCP_PROJECT...\e[0m]\n"
+if [[ $# -lt 2 ]]; then
+    printf "Usage: $0 \e[4mGCP_PROJECT\e[0m \e[4mDOCKER_HUB_REPO\e[0m\n"
     exit 1
 fi
 
-tag="$(date "+%Y%m%d")"
+project="$1"
+docker_hub_repo="$2"
 
 # Change into this directory.
 cd "$(cd "$(dirname "$0")" && pwd)"
 
-# Update the tags.
-printf "Do you want to create a date-stamped tag? [Y/n]? "
-read confirm
-
-if [[ "$confirm" = "Y" ]] || [[ "$confirm" = "y" ]] || [[ "$confirm" = "" ]]; then
-    printf "\n"
-    printf "\e[38;5;116mRecreating tag on remote (may show errors if remote tag doesn't exist)\e[0m\n"
-    git tag -d "$tag"
-    git push origin :"$tag"
-    git tag -am "Release: $tag" "$tag"
-    git push origin "$tag"
-fi
-
 # Submit the build.
-for project in "$@"; do
-    printf "\n\e[38;5;116mSubmitting build for project \`${project}\`.\e[0m\n"
-    gcloud builds submit --project "$project" --config ./cloudbuild.yaml .
-done
+printf "\n\e[38;5;116mSubmitting build.\e[0m\n"
+gcloud builds submit \
+    --project "$project" \
+    --substitutions "_DOCKER_HUB_REPO=${docker_hub_repo}" \
+    --config ./cloudbuild.yaml .
