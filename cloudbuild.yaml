@@ -54,7 +54,7 @@ steps:
       - '--plaintext-file=docker-hub-password.txt'
 
   - name: 'gcr.io/cloud-builders/docker'
-    waitFor: [decrypt-hub-username, decrypt-hub-password]
+    waitFor: [decrypt-hub-username, decrypt-hub-password, fpm-build, echo-build]
     entrypoint: 'bash'
     args: ['-c', 'cat docker-hub-password.txt | docker login --username=$$(cat docker-hub-username.txt) --password-stdin']
 
