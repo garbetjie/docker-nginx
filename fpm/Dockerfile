@@ -12,7 +12,7 @@ ENV FPM_HOST="fpm" \
     FPM_STATUS_HOSTS_DENIED="all" \
     FPM_STATUS_PATH="/_/status" \
     MAX_REQUEST_SIZE="16M" \
-    WEBROOT="/app/public" \
+    WEBROOT="/app" \
     TIMEOUT=600
 
 COPY fs/ /
