@@ -23,7 +23,9 @@ for file in `find /etc/nginx -type f -iname '*.conf'`; do
               $FPM_STATUS_HOSTS_FORMATTED
               $MAX_REQUEST_SIZE
               $WEBROOT
-              $TIMEOUT' < "$file" | tee "$file" 1> /dev/null
+              $TIMEOUT' < "$file" > "${file}.tmp"
+
+    mv "${file}.tmp" "$file"
 done
 
 # Run the nginx server.
