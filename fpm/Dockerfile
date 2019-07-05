@@ -6,7 +6,7 @@ RUN set -e; \
     rm -rf conf.d fastcgi* *.default *_params; \
     apk add --no-cache gettext
 
-ENV FPM_HOST="fpm" \
+ENV FPM_HOST="127.0.0.1" \
     FPM_PORT=9000 \
     FPM_STATUS_HOSTS_ALLOWED="172.16.0.0/12 127.0.0.1" \
     FPM_STATUS_HOSTS_DENIED="all" \

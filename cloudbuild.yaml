@@ -20,12 +20,12 @@ steps:
     id: fpm-pull
     waitFor: ['-']
     entrypoint: 'bash'
-    args: ['-c', 'docker pull $_DOCKER_HUB_REPO/nginx:fpm || exit 0']
+    args: ['-c', 'docker pull $_DOCKER_HUB_REPO/nginx:fpm-proxy || exit 0']
 
   - name: 'gcr.io/cloud-builders/docker'
     waitFor: [fpm-pull]
     id: fpm-build
-    args: ['build', '-t', '$_DOCKER_HUB_REPO/nginx:fpm', '--cache-from', '$_DOCKER_HUB_REPO/nginx:fpm', '-f', 'fpm/Dockerfile', 'fpm']
+    args: ['build', '-t', '$_DOCKER_HUB_REPO/nginx:fpm-proxy', '--cache-from', '$_DOCKER_HUB_REPO/nginx:fpm-proxy', '-f', 'fpm/Dockerfile', 'fpm']
 
 # Log in to Docker Hub.
 
