@@ -22,8 +22,8 @@ for file in `find /etc/nginx -type f -iname '*.conf'`; do
               $FPM_STATUS_PATH
               $FPM_STATUS_HOSTS_FORMATTED
               $MAX_REQUEST_SIZE
-              $WEBROOT
-              $TIMEOUT' < "$file" > "${file}.tmp"
+              $TIMEOUT
+              $WEBROOT' < "$file" > "${file}.tmp"
 
     mv "${file}.tmp" "$file"
 done
